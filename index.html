@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Minecraft Map Converter</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero">
+        <div class="brand-row">
+          <img class="brand-logo" src="./assets/minecraftmapconverter-logo-delft.png" alt="" width="14" height="17">
+          <h1>Minecraft Map Converter</h1>
+        </div>
+        <p class="hero-line">Turn a seed into linked natural and water-mask maps.</p>
+        <p class="lede">
+          Paste a Java Edition seed, choose a radius from <code>0, 0</code>, inspect the raw-style terrain beside the processed water mask, then export it as <code>PNG</code> or <code>JPEG</code>.
+        </p>
+      </section>
+
+      <section class="workspace">
+        <form id="controls" class="controls">
+          <div class="field">
+            <label for="seedInput">Seed</label>
+            <input id="seedInput" name="seed" type="text" placeholder="Example: -123456789 or Cherry Grove">
+          </div>
+
+          <div class="field">
+            <label for="radiusInput">Radius from center</label>
+            <div class="inline-input">
+              <input id="radiusInput" name="radius" type="number" min="1" step="1" value="2048">
+              <span>blocks</span>
+            </div>
+          </div>
+
+
+          <div class="metrics" id="metrics">
+            <div>
+              <span class="metric-label">Preview size</span>
+              <strong id="previewSize">-</strong>
+            </div>
+            <div>
+              <span class="metric-label">Download size</span>
+              <strong id="downloadSize">-</strong>
+            </div>
+            <div>
+              <span class="metric-label">Radius span</span>
+              <strong id="blockSpan">-</strong>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button id="previewButton" type="button">Generate Preview</button>
+          </div>
+
+          <button id="retryDownloadButton" class="retry-download" type="button" hidden disabled>
+            Download generated file again
+          </button>
+
+          <p class="hint">
+            Preview is faster at 1 pixel = 16 blocks, so tiny rivers and coastline details may look simplified. Final downloads still render true to rivers and coastlines at the selected resolution.
+          </p>
+        </form>
+
+        <section class="viewer">
+          <div class="viewer-head">
+            <h2>Preview</h2>
+            <p id="statusText" class="status" aria-live="polite">Waiting for input.</p>
+          </div>
+          <div class="map-grid" id="mapGrid">
+            <article class="map-panel">
+              <div class="map-title">
+                <strong>Colored</strong>
+                <span>Biome + terrain color</span>
+              </div>
+              <div class="canvas-wrap">
+                <canvas id="rawCanvas" width="960" height="960" aria-label="Colored seed preview"></canvas>
+              </div>
+              <button id="downloadColoredButton" class="panel-download" type="button">Download Colored Image</button>
+            </article>
+            <article class="map-panel">
+              <div class="map-title">
+                <strong>Uncolored</strong>
+                <span>White land, blue water</span>
+              </div>
+              <div class="canvas-wrap">
+                <canvas id="previewCanvas" width="960" height="960" aria-label="Uncolored water mask preview"></canvas>
+              </div>
+              <button id="downloadUncoloredButton" class="panel-download" type="button">Download Uncolored Image</button>
+            </article>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <dialog id="downloadDialog" class="download-dialog" aria-labelledby="downloadDialogTitle">
+      <div class="dialog-card">
+        <div class="dialog-head">
+          <div>
+            <p class="eyebrow">Export Settings</p>
+            <h2 id="downloadDialogTitle">Download map</h2>
+          </div>
+          <button id="closeDownloadDialogButton" class="icon-button" type="button" aria-label="Close download settings">x</button>
+        </div>
+
+        <div class="field">
+          <label for="resolutionSelect">Preview and download resolution</label>
+          <select id="resolutionSelect" name="resolution">
+            <option value="1">Full resolution (1 block = 1 pixel)</option>
+            <option value="4" selected>Lower resolution (4 blocks = 1 pixel)</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="formatSelect">Download format</label>
+          <select id="formatSelect" name="format">
+            <option value="png">PNG</option>
+            <option value="jpeg">JPEG</option>
+          </select>
+        </div>
+
+        <p class="hint">Download resolution affects the final export only. The preview stays faster at 1 pixel = 16 blocks.</p>
+
+        <div class="dialog-actions">
+          <button id="cancelDownloadDialogButton" type="button">Cancel</button>
+          <button id="confirmDownloadButton" type="button">Download Image</button>
+        </div>
+      </div>
+    </dialog>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

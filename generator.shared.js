@@ -175,7 +175,7 @@ function normalizeSeed(seedText) {
 function writePreviewPoint(engine, blockX, blockZ, pixels, rawPixels, offset) {
   const climate = sampleClimate(engine, blockX, blockZ);
   const biome = biomeForClimate(climate);
-  writeMaskColor(biome, pixels, offset);
+  writeMaskColor(biome, climate, pixels, offset);
 
   if (rawPixels) {
     writeBiomeColor(biome, climate, rawPixels, offset);
@@ -278,6 +278,14 @@ function isWaterBiome(biome) {
   return biome.includes("ocean") || biome === "river" || biome === "frozen_river";
 }
 
+function isWaterPoint(biome, climate) {
+  if (!Number.isFinite(climate.surface)) {
+    return isWaterBiome(biome);
+  }
+
+  return climate.surface <= SEA_LEVEL;
+}
+
 function waterColorFor(biome) {
   if (biome.includes("frozen") || biome.includes("cold")) {
     return WATER_COLORS.cold;
@@ -376,11 +384,11 @@ function writeColorAt(engine, blockX, blockZ, source, output, offset) {
     return;
   }
 
-  writeMaskColor(biome, output, offset);
+  writeMaskColor(biome, climate, output, offset);
 }
 
-function writeMaskColor(biome, output, offset) {
-  if (!isWaterBiome(biome)) {
+function writeMaskColor(biome, climate, output, offset) {
+  if (!isWaterPoint(biome, climate)) {
     output[offset + 0] = LAND_RGB[0];
     output[offset + 1] = LAND_RGB[1];
     output[offset + 2] = LAND_RGB[2];
@@ -394,7 +402,7 @@ function writeMaskColor(biome, output, offset) {
 }
 
 function writeBiomeColor(biome, climate, output, offset) {
-  if (isWaterBiome(biome)) {
+  if (isWaterPoint(biome, climate)) {
     const water = waterColorFor(biome);
     output[offset + 0] = water[0];
     output[offset + 1] = water[1];
